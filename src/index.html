@@ -9,7 +9,30 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  https://polarapp-oamk.herokuapp.com/users
+Available endpoints:<br>
+<br>
+//get all users<br>
+GET https://polarapp-oamk.herokuapp.com/users<br>
+//new user<br>
+POST https://polarapp-oamk.herokuapp.com/users<br>
+//body:<br>
+{<br>
+	"email": "esko.eka@gmail.com",<br>
+	"password": "123"<br>
+}<br>
+<br>
+//by id<br>
+GET https://polarapp-oamk.herokuapp.com/users/<b>id</b><br>
+DELETE https://polarapp-oamk.herokuapp.com/users/<b>id</b><br>
+<br>
+//login<br>
+POST https://polarapp-oamk.herokuapp.com/login<br>
+//body:<br>
+{<br>
+	"email": "esko.eka@gmail.com",<br>
+	"password": "123"<br>
+}<br>
+
 </body>
 </html>
 

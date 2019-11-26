@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-var mongodb = require("mongodb");
+var mongodb = require("mongodb")
+var bcrypt = require('bcryptjs');
 var ObjectID = mongodb.ObjectID;
 
 var USERS_COLLECTION = "users";
@@ -74,13 +75,44 @@ function handleError(res, reason, message, code) {
 
 app.post("/users", function(req, res) {
   var newUser = req.body;
-  db.collection(USERS_COLLECTION).insertOne(newUser, function(err, doc) {
+  db.collection(USERS_COLLECTION).findOne({email: newUser.email}, function(err, docs) {
     if (err) {
-      handleError(res, err.message, "Failed to create new user.");
+      handleError(res, err.message, "Failed to get users.");
     } else {
-      res.status(201).json(doc.ops[0]);
+      if (docs == null) {
+        newUser.password = bcrypt.hashSync(req.body.password, 8);
+        db.collection(USERS_COLLECTION).insertOne(newUser, function(err, doc) {
+        if (err) {
+          handleError(res, err.message, "Failed to create new user.");
+        } else {
+          res.status(201).json(doc.ops[0]);
     }
   });
+      } else {
+        res.status(500).send("E-mail already exists");
+      }
+    }
+  });
+
+});
+
+app.post('/login', function(req, res) {
+    // create a token
+    /*var token = jwt.sign({ id: user._id }, config.secret, {
+      expiresIn: 86400 // expires in 24 hours
+    });*/
+    //res.status(200).send({ auth: true, token: token });
+    db.collection(USERS_COLLECTION).findOne({email: req.body.email}, function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get users.");
+      } else {
+        if (docs != null && bcrypt.compareSync(req.body.password, docs.password)) {
+          res.status(200).json(docs);
+        } else {
+          res.status(500).send("Incorrect e-mail and/or password");
+        }
+      }
+    });
 });
 
 app.get("/users", function(req, res) {

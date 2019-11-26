@@ -2,8 +2,8 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb")
 var bcrypt = require('bcryptjs');
-//var jwt = require('jsonwebtoken');
-const jwt = require('njwt')
+var jwt = require('jsonwebtoken');
+const jwt2 = require('njwt')
 var config = require('./config');
 var ObjectID = mongodb.ObjectID;
 

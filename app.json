@@ -1,0 +1,17 @@
+{
+  "name": "Travel Manager",
+  "description": "",
+  "keywords": [
+  ],
+  "repository": "",
+  "success_url": "/",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    "mongolab"
+  ]
+}

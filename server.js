@@ -2,6 +2,9 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb")
 var bcrypt = require('bcryptjs');
+//var jwt = require('jsonwebtoken');
+const jwt = require('njwt')
+var config = require('./config');
 var ObjectID = mongodb.ObjectID;
 
 var USERS_COLLECTION = "users";
@@ -107,22 +110,33 @@ app.post('/login', function(req, res) {
         handleError(res, err.message, "Failed to get users.");
       } else {
         if (docs != null && bcrypt.compareSync(req.body.password, docs.password)) {
-          res.status(200).json(docs);
+          var token = jwt.sign({ id: docs._id }, config.secret, {
+            expiresIn: 86400 // expires in 24 hours
+          });
+          res.status(200).send({ auth: true, token: token });
         } else {
-          res.status(500).send("Incorrect e-mail and/or password");
+          res.status(401).send({ auth: false, token: null });
         }
       }
     });
 });
 
 app.get("/users", function(req, res) {
-  db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
+  /*var token = req.headers['x-access-token'];
+  if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+  jwt.verify(token, config.secret, function(err, decoded) {
     if (err) {
-      handleError(res, err.message, "Failed to get users.");
-    } else {
-      res.status(200).json(docs);
+       return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    } else {*/
+      db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
+        if (err) {
+          handleError(res, err.message, "Failed to get users.");
+        } else {
+          res.status(200).json(docs);
+        }
+      });/*
     }
-  });
+  });*/
 });
 
 app.get("/users/:id", function(req, res) {

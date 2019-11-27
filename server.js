@@ -149,6 +149,16 @@ app.get("/users/:id", function(req, res) {
   });
 });
 
+app.get("/users/email/:email", function(req, res) {
+  db.collection(USERS_COLLECTION).findOne({email: req.params.email}, function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get user.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
 app.delete("/users/:id", function(req, res) {
   db.collection(USERS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {

@@ -9,33 +9,64 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-Available endpoints:<br>
-<br>
-//get all users<br>
-GET https://polarapp-oamk.herokuapp.com/users<br>
-//new user<br>
-POST https://polarapp-oamk.herokuapp.com/users<br>
-//body:<br>
-{<br>
-	"email": "esko.eka@gmail.com",<br>
-	"password": "123"<br>
-}<br>
-<br>
-//by id<br>
-GET https://polarapp-oamk.herokuapp.com/users/<b>id</b><br>
-DELETE https://polarapp-oamk.herokuapp.com/users/<b>id</b><br>
-<br>
-//by email<br>
-GET https://polarapp-oamk.herokuapp.com/users/email/<b>email</b><br>
-<br>
-//login<br>
-POST https://polarapp-oamk.herokuapp.com/login<br>
-//body:<br>
-{<br>
-	"email": "esko.eka@gmail.com",<br>
-	"password": "123"<br>
-}<br>¨
-//returns { 'auth': 'true'/'false' }<br>
+  <div style="padding: 20px">
+      ACTIVE API ENDPOINTS<br>
+      <div style="margin-left: 40px">
+          <b>bolded</b> denotes a placeholder value
+        </div>
+      <br>
+      get all users<br>
+      <div class="tab">
+        GET https://polarapp-oamk.herokuapp.com/users
+      </div>
+      <br>
+      new user
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/users<br>
+          requires body:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "email": "<b>esko.eka@gmail.com</b>",<br>
+                  "password": "<b>123</b>"<br>
+                </div>
+              }
+          </div>
+      </div>
+      <br>
+      by id
+      <div class="tab">
+          GET https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c3</b><br>
+          DELETE https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c2</b>
+      </div>
+      <br>
+      by email
+      <div class="tab">
+          GET https://polarapp-oamk.herokuapp.com/users/email/<b>esko.eka@gmail.com</b>
+      </div>
+      <br>
+      login w/ email & password
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/login<br>
+          requires body:<br>
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "email": "<b>esko.eka@gmail.com</b>",<br>
+                  "password": "<b>123</b>"<br>
+                </div>
+              }
+          </div>
+          returns:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                    "auth": true OR false,<br>
+                    "token": "<b>eyJhbGciOiJIUzI1NiIs...</b>" OR null      <i>// for later use to authorize API access</i>
+                </div>
+              }
+      </div>
+  </div>
 </body>
 </html>
 

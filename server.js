@@ -8,6 +8,10 @@ var config = require('./config');
 var ObjectID = mongodb.ObjectID;
 
 var USERS_COLLECTION = "users";
+var ROUTES_COLLECTION = "routes";
+var MYROUTES_COLLECTION = "myroutes";
+
+var tokenRequired = false;
 
 var AKey;
 var AId;
@@ -35,7 +39,9 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
   }
 
   db = client.db();
+
   console.log("Database connection ready");
+
   /*db.collection(KEYS_COLLECTION).findOne({ type: 'AKey' }, function(err, docs) {
     AKey = docs['value'];
     db.collection(KEYS_COLLECTION).findOne({ type: 'AId' }, function(err, docs) {
@@ -70,6 +76,12 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
   });
 });
 
+function tokenIsValid(token) {
+  jwt.verify(token, config.secret, function(err, decoded) {
+    if (err) { return false; } else { return true; }
+  });
+}
+
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
   console.log("ERROR: " + reason);
@@ -77,8 +89,12 @@ function handleError(res, reason, message, code) {
 }
 
 app.post("/users", function(req, res) {
-  var newUser = req.body;
-  db.collection(USERS_COLLECTION).findOne({email: newUser.email}, function(err, docs) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    var newUser = req.body;
+    db.collection(USERS_COLLECTION).findOne({email: newUser.email}, function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get users.");
     } else {
@@ -89,14 +105,14 @@ app.post("/users", function(req, res) {
           handleError(res, err.message, "Failed to create new user.");
         } else {
           res.status(201).json(doc.ops[0]);
-    }
-  });
-      } else {
-        res.status(500).send("E-mail already exists");
       }
-    }
-  });
-
+    });
+        } else {
+          res.status(500).send("E-mail already exists");
+        }
+      }
+    });
+  }
 });
 
 app.post('/login', function(req, res) {
@@ -122,51 +138,144 @@ app.post('/login', function(req, res) {
 });
 
 app.get("/users", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get users.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
   /*var token = req.headers['x-access-token'];
   if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, config.secret, function(err, decoded) {
     if (err) {
        return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
-    } else {*/
+    } else {
       db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
         if (err) {
           handleError(res, err.message, "Failed to get users.");
         } else {
           res.status(200).json(docs);
         }
-      });/*
+      });
     }
   });*/
 });
 
 app.get("/users/:id", function(req, res) {
-  db.collection(USERS_COLLECTION).findOne({_id: new ObjectID(req.params.id)}, function(err, docs) {
-    if (err) {
-      handleError(res, err.message, "Failed to get user.");
-    } else {
-      res.status(200).json(docs);
-    }
-  });
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(USERS_COLLECTION).findOne({_id: new ObjectID(req.params.id)}, function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get user.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
 });
 
 app.get("/users/email/:email", function(req, res) {
-  db.collection(USERS_COLLECTION).findOne({email: req.params.email}, function(err, docs) {
-    if (err) {
-      handleError(res, err.message, "Failed to get user.");
-    } else {
-      res.status(200).json(docs);
-    }
-  });
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(USERS_COLLECTION).findOne({email: req.params.email}, function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get user.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
 });
 
+
 app.delete("/users/:id", function(req, res) {
-  db.collection(USERS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
-    if (err) {
-      handleError(res, err.message, "Failed to delete user");
-    } else {
-      res.status(200).json(req.params.id);
-    }
-  });
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(USERS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+      if (err) {
+        handleError(res, err.message, "Failed to delete user");
+      } else {
+        res.status(200).json(req.params.id);
+      }
+    });
+  }
+});
+
+app.get("/routes", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(ROUTES_COLLECTION).find({}).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get routes.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
+});
+
+app.get("/routes/:id", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(ROUTES_COLLECTION).findOne({_id: new ObjectID(req.params.id)}, function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get route.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
+});
+
+app.post("/routes", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    var newRoute = req.body;
+    db.collection(ROUTES_COLLECTION).insertOne(newRoute, function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to create new route.");
+      } else {
+        var newMyRoute = JSON.parse('{ "userId":"' + doc.ops[0].userId + '" , "routeId":"' + doc.ops[0]._id + '" }');
+        db.collection(MYROUTES_COLLECTION).insertOne(newMyRoute, function(err, doc) {
+          if (err) { }
+        });
+        res.status(201).json(doc.ops[0]);
+      }
+    });
+  }
+});
+
+app.delete("/routes/:id", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(ROUTES_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+      if (err) {
+        handleError(res, err.message, "Failed to delete route");
+      } else {
+        res.status(200).json(req.params.id);
+      }
+    });
+  }
 });
 
 /*app.get("/players/email/:email", function(req, res) {

@@ -34,15 +34,40 @@
           </div>
       </div>
       <br>
-      by id
+      user by id
       <div class="tab">
           GET https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c3</b><br>
           DELETE https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c2</b>
       </div>
       <br>
-      by email
+      user by email
       <div class="tab">
           GET https://polarapp-oamk.herokuapp.com/users/email/<b>esko.eka@gmail.com</b>
+      </div>
+      <br>
+      get all routes<br>
+      <div class="tab">
+        GET https://polarapp-oamk.herokuapp.com/routes
+      </div>
+      <br>
+      new route
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/routes<br>
+          requires body:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "userId": "<b>5ddd2f1a61cd251a6417d4c3</b>",<br>
+                  ...
+                </div>
+              }
+          </div>
+      </div>
+      <br>
+      route by id
+      <div class="tab">
+          GET https://polarapp-oamk.herokuapp.com/routes/<b>5ddd2f1a61cd251a6417d4c3</b><br>
+          DELETE https://polarapp-oamk.herokuapp.com/routes/<b>5ddd2f1a61cd251a6417d4c2</b>
       </div>
       <br>
       login w/ email & password

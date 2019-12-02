@@ -108,7 +108,7 @@ app.post("/users", function(req, res) {
       }
     });
         } else {
-          res.status(500).send("E-mail already exists");
+          handleError(res, "duplicate e-mail", "E-mail already exists");
         }
       }
     });

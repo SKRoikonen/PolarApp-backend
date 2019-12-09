@@ -253,10 +253,10 @@ app.post("/routes", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to create new route.");
       } else {
-        var newMyRoute = JSON.parse('{ "userId":"' + doc.ops[0].userId + '" , "routeId":"' + doc.ops[0]._id + '" }');
+        /*var newMyRoute = JSON.parse('{ "userId":"' + doc.ops[0].userId + '" , "routeId":"' + doc.ops[0]._id + '" }');
         db.collection(MYROUTES_COLLECTION).insertOne(newMyRoute, function(err, doc) {
           if (err) { }
-        });
+        });*/
         res.status(201).json(doc.ops[0]);
       }
     });

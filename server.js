@@ -243,6 +243,22 @@ app.get("/routes/:id", function(req, res) {
   }
 });
 
+app.get("/routes/owner/:owner", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(ROUTES_COLLECTION).find({ owner: req.params.owner }, {projection:{ datapoints: 0 }}).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get routes.");
+      } else {
+        res.status(200).json(docs);
+      }
+    });
+  }
+});
+
+
 app.post("/routes", function(req, res) {
   var token = req.headers['x-access-token'];
   if (tokenRequired && (!tokenIsValid(token || !token))) {

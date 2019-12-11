@@ -300,7 +300,7 @@ app.get("/follows/myId/:myId/users", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(FOLLOWS_COLLECTION).find({}).toArray(function(err, docs) {
+    db.collection(FOLLOWS_COLLECTION).find({ myId: req.params.myId }).toArray(function(err, docs) {
       if (err) {
         handleError(res, err.message, "Failed to get follows.");
       } else {

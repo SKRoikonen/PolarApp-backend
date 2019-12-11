@@ -20,6 +20,21 @@
         GET https://polarapp-oamk.herokuapp.com/users
       </div>
       <br>
+      <b>NEW!</b> get all users & include if user follows them<br>
+      <div class="tab">
+        GET https://polarapp-oamk.herokuapp.com/users/followCheck/<b>5ddd2f1a61cd251a6417d4c3</b><br>
+        returns user array:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "email": "<b>esko.eka@gmail.com</b>",<br>
+                  <b>...</b><br>
+                  "followed": <b>true/false</b><br>
+                </div>
+              }
+          </div>
+      </div>
+      <br>
       new user
       <div class="tab">
           POST https://polarapp-oamk.herokuapp.com/users<br>
@@ -113,8 +128,6 @@
           GET https://polarapp-oamk.herokuapp.com/routes/owner/<b>5ddd2f1a61cd251a6417d4c3</b>
       </div>
       <br>
-      <b>NEW!</b>
-      <br><br>
       create new follow
       <div class="tab">
           POST https://polarapp-oamk.herokuapp.com/follows<br>

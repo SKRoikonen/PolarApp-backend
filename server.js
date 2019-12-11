@@ -167,6 +167,53 @@ app.get("/users", function(req, res) {
   });*/
 });
 
+app.get("/users/followCheck/:myId", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(FOLLOWS_COLLECTION).find({ myId: req.params.myId }).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get follows.");
+      } else {
+        var userIds = [];
+        docs.forEach(follow => {
+          userIds.push(follow["targetId"]);
+        });
+        db.collection(USERS_COLLECTION).find({}, {projection:{ password: 0 }}).toArray(function(err, docs) {
+          if (err) {
+            handleError(res, err.message, "Failed to get users.");
+          } else {
+            docs.forEach(user => {
+              if (userIds.includes(user._id + "")) {
+                user.followed = true;
+              } else {
+                user.followed = false;
+              }
+            });
+            res.status(200).json(docs);
+          }
+        });
+      }
+    });
+  }
+  /*var token = req.headers['x-access-token'];
+  if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+  jwt.verify(token, config.secret, function(err, decoded) {
+    if (err) {
+       return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    } else {
+      db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
+        if (err) {
+          handleError(res, err.message, "Failed to get users.");
+        } else {
+          res.status(200).json(docs);
+        }
+      });
+    }
+  });*/
+});
+
 app.get("/users/:id", function(req, res) {
   var token = req.headers['x-access-token'];
   if (tokenRequired && (!tokenIsValid(token || !token))) {

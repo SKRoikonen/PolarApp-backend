@@ -292,7 +292,7 @@ app.get("/follows/myId/:myId/users", function(req, res) {
         docs.forEach(user => {
           userIds.push(user["_id"]);
         });
-        db.collection(USERS_COLLECTION).find({ _id: { $nin: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
+        db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
           if (err) {
             handleError(res, err.message, "Failed to get users.");
           } else {

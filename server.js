@@ -289,9 +289,10 @@ app.get("/follows/myId/:myId/users", function(req, res) {
         handleError(res, err.message, "Failed to get follows.");
       } else {
         var userIds = [];
-        docs.forEach(user => {
-          userIds.push(user["_id"]);
+        docs.forEach(follow => {
+          userIds.push(new ObjectID(follow["targetId"]));
         });
+        console.log(userIds);
         db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
           if (err) {
             handleError(res, err.message, "Failed to get users.");

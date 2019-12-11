@@ -9,7 +9,7 @@ var ObjectID = mongodb.ObjectID;
 
 var USERS_COLLECTION = "users";
 var ROUTES_COLLECTION = "routes";
-var MYROUTES_COLLECTION = "myroutes";
+var FOLLOWS_COLLECTION = "follows";
 
 var tokenRequired = false;
 
@@ -142,7 +142,7 @@ app.get("/users", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
+    db.collection(USERS_COLLECTION).find({}, {projection:{ password: 0 }}).toArray(function(err, docs) {
       if (err) {
         handleError(res, err.message, "Failed to get users.");
       } else {
@@ -258,6 +258,48 @@ app.post("/routes", function(req, res) {
           if (err) { }
         });*/
         res.status(201).json(doc.ops[0]);
+      }
+    });
+  }
+});
+
+app.post("/follows", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    var newFollow = req.body;
+    db.collection(FOLLOWS_COLLECTION).insertOne(newFollow, function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to create new follow.");
+      } else {
+        res.status(201).json(doc.ops[0]);
+      }
+    });
+  }
+});
+
+app.get("/follows/myId/:myId/users", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(FOLLOWS_COLLECTION).find({}).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get follows.");
+      } else {
+        var userIds = [];
+        docs.forEach(user => {
+          userIds.push(user["_id"]);
+        });
+        db.collection(USERS_COLLECTION).find({ _id: { $nin: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
+          if (err) {
+            handleError(res, err.message, "Failed to get users.");
+          } else {
+            res.status(200).json(docs);
+          }
+        });
+
       }
     });
   }

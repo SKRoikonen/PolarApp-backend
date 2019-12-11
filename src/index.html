@@ -99,7 +99,31 @@
                     "token": "<b>eyJhbGciOiJIUzI1NiIs...</b>" OR null      <i>// for later use to authorize API access</i>
                 </div>
               }
+          </div>
       </div>
+      <br>
+      <b>NEW!</b>
+      <br><br>
+      create new follow
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/follows<br>
+          requires body:<br>
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "myId": "<b>5ddd2f1a61cd251a6417d4c3</b>",<br>
+                  "targetId": "<b>5de79d91acc7710017036f60</b>"<br>
+                </div>
+              }
+          </div>
+      </div>
+      <br>
+      get followed users
+      <div class="tab">
+          GET https://polarapp-oamk.herokuapp.com/follows/myId/<b>5ddd2f1a61cd251a6417d4c3</b>/users<br>
+          returns array of users<br>
+      </div>
+
   </div>
 </body>
 </html>

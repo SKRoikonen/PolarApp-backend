@@ -7,6 +7,7 @@ const jwt2 = require('njwt')
 var config = require('./config');
 var ObjectID = mongodb.ObjectID;
 
+var KEYS_COLLECTION = "keys";
 var USERS_COLLECTION = "users";
 var ROUTES_COLLECTION = "routes";
 var FOLLOWS_COLLECTION = "follows";
@@ -42,7 +43,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
 
   console.log("Database connection ready");
 
-  /*db.collection(KEYS_COLLECTION).findOne({ type: 'AKey' }, function(err, docs) {
+  db.collection(KEYS_COLLECTION).findOne({ type: 'AKey' }, function(err, docs) {
     AKey = docs['value'];
     db.collection(KEYS_COLLECTION).findOne({ type: 'AId' }, function(err, docs) {
       AId = docs['value'];
@@ -55,7 +56,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
       const upload = multer({
         storage: multerS3({
           s3: s3,
-          bucket: 'travelmanagerpictures',
+          bucket: 'polarapp-pictures',
           acl: 'public-read',
           metadata: function (req, file, cb) {
             cb(null, {fieldName: file.fieldname});
@@ -68,7 +69,6 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
       singleUpload = upload.single('image');
     });
   });
-  */
 
   var server = app.listen(process.env.PORT || 4200, function () {
     var port = server.address().port;
@@ -397,6 +397,16 @@ app.delete("/routes/:id", function(req, res) {
       }
     });
   }
+});
+
+app.post('/image-upload', function(req, res) {
+  singleUpload(req, res, function(err) {
+    if (err) {
+      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
+    } else {
+      return res.json({'imageUrl': req.file.location});
+    }
+  });
 });
 
 /*app.get("/players/email/:email", function(req, res) {
@@ -899,17 +909,6 @@ app.delete("/api/messages/tripId/:id", function(req, res) {
   });
 });
 
-app.post('/api/image-upload', function(req, res) {
-
-  singleUpload(req, res, function(err) {
-
-    if (err) {
-      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
-    }
-
-    return res.json({'imageUrl': req.file.location});
-  });
-});
 
 app.delete('/api/image-upload/:key', function(req, res) {
   var fileKey = req.params.key;

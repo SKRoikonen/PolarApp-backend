@@ -180,7 +180,7 @@ app.get("/users/followCheck/:myId", function(req, res) {
         docs.forEach(follow => {
           userIds.push(follow["targetId"]);
         });
-        db.collection(USERS_COLLECTION).find({}, {projection:{ password: 0 }}).toArray(function(err, docs) {
+        db.collection(USERS_COLLECTION).find({ _id: { $ne: ObjectID(req.params.myId)} }, {projection:{ password: 0 }}).toArray(function(err, docs) {
           if (err) {
             handleError(res, err.message, "Failed to get users.");
           } else {
@@ -197,21 +197,6 @@ app.get("/users/followCheck/:myId", function(req, res) {
       }
     });
   }
-  /*var token = req.headers['x-access-token'];
-  if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
-  jwt.verify(token, config.secret, function(err, decoded) {
-    if (err) {
-       return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
-    } else {
-      db.collection(USERS_COLLECTION).find({}).toArray(function(err, docs) {
-        if (err) {
-          handleError(res, err.message, "Failed to get users.");
-        } else {
-          res.status(200).json(docs);
-        }
-      });
-    }
-  });*/
 });
 
 app.get("/users/:id", function(req, res) {
@@ -219,7 +204,7 @@ app.get("/users/:id", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(USERS_COLLECTION).findOne({_id: new ObjectID(req.params.id)}, function(err, docs) {
+    db.collection(USERS_COLLECTION).findOne({_id: ObjectID(req.params.id)}, function(err, docs) {
       if (err) {
         handleError(res, err.message, "Failed to get user.");
       } else {
@@ -244,13 +229,41 @@ app.get("/users/email/:email", function(req, res) {
   }
 });
 
+app.post("/users/email/followCheck", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(USERS_COLLECTION).findOne({ email: req.body.email, _id: { $ne: ObjectID(req.body.myId) }}, {projection:{ password: 0 }}, function(err, userResult) {
+      if (err) {
+        handleError(res, err.message, "Failed to get user.");
+      } else if (userResult == null) {
+        res.status(200).json(userResult);
+      } else {
+        db.collection(FOLLOWS_COLLECTION).findOne({ myId: req.body.myId, targetId: userResult._id+"" }, function(err, followResult) {
+          if (err) {
+            handleError(res, err.message, "Failed to get follow.");
+          } else {
+            if (followResult != null) {
+              userResult.followed = true;
+            } else {
+              userResult.followed = false;
+            }
+            res.status(200).json(userResult);
+          }
+        });
+      }
+    });
+  }
+});
+
 
 app.delete("/users/:id", function(req, res) {
   var token = req.headers['x-access-token'];
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(USERS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    db.collection(USERS_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, result) {
       if (err) {
         handleError(res, err.message, "Failed to delete user");
       } else {
@@ -280,7 +293,7 @@ app.get("/routes/:id", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(ROUTES_COLLECTION).findOne({_id: new ObjectID(req.params.id)}, function(err, docs) {
+    db.collection(ROUTES_COLLECTION).findOne({_id: ObjectID(req.params.id)}, function(err, docs) {
       if (err) {
         handleError(res, err.message, "Failed to get route.");
       } else {
@@ -353,7 +366,7 @@ app.get("/follows/myId/:myId/users", function(req, res) {
       } else {
         var userIds = [];
         docs.forEach(follow => {
-          userIds.push(new ObjectID(follow["targetId"]));
+          userIds.push(ObjectID(follow["targetId"]));
         });
         console.log(userIds);
         db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
@@ -374,7 +387,7 @@ app.delete("/routes/:id", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(ROUTES_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    db.collection(ROUTES_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, result) {
       if (err) {
         handleError(res, err.message, "Failed to delete route");
       } else {

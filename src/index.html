@@ -20,10 +20,10 @@
         GET https://polarapp-oamk.herokuapp.com/users
       </div>
       <br>
-      <b>NEW!</b> get all users & include if user follows them<br>
+      get all other users & include if user follows them<br>
       <div class="tab">
         GET https://polarapp-oamk.herokuapp.com/users/followCheck/<b>5ddd2f1a61cd251a6417d4c3</b><br>
-        returns user array:
+        returns user array (excludes searching user):
           <div style="margin-left: 20px">
               {<br>
                 <div style="margin-left: 20px">
@@ -68,6 +68,31 @@
       <div class="tab">
           GET https://polarapp-oamk.herokuapp.com/users/email/<b>esko.eka@gmail.com</b>
       </div>
+      <br></br>
+      <b>NEW!</b> user by email w/ follow check
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/users/email/followCheck<br>
+          requires body:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "email": "<b>teuvo.toka@gmail.com</b>",<br>
+                  "myId": "<b>5ddd2f1a61cd251a6417d4c3</b>"
+                </div>
+              }
+          </div>
+          returns user (null if same as searching user) with additional field:
+          <div style="margin-left: 20px">
+            {<br>
+              <div style="margin-left: 20px">
+                <b>...</b><br>
+                "followed": <b>true/false</b><br>
+              </div>
+            }
+          </div>
+
+      </div>
+
       <br>
       get all routes<br>
       <div class="tab">

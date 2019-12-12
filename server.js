@@ -325,6 +325,8 @@ app.post("/routes", function(req, res) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     var newRoute = req.body;
+    var date = new Date();
+    newRoute.date = date.getDate()  + "/" + (date.getMonth()+1) + "/" + (date.getFullYear() - 2000);
     db.collection(ROUTES_COLLECTION).insertOne(newRoute, function(err, doc) {
       if (err) {
         handleError(res, err.message, "Failed to create new route.");

@@ -113,11 +113,10 @@ const imageUpload = async (base64) => {
 
   // Ensure that you POST a base64 data to your server.
   // Let's assume the variable "base64" is one.
-  const base64Data = new Buffer.from(base64.toString().replace(/^data:image\/\w+;base64,/, ""), 'base64');
+  const base64Data = new Buffer.from(base64, 'base64');
   console.log(base64Data);
   // Getting the file type, ie: jpeg, png or gif
-  const type = base64.toString().split(';')[0].split('/')[1];
-  console.log(type);
+  const type = 'bmp';
   // With this setup, each time your user uploads an image, will be overwritten.
   // To prevent this, use a different Key each time.
   // This won't be needed if they're uploading their avatar, hence the filename, userAvatar.js.
@@ -155,7 +154,7 @@ module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
   //console.log(req.body);
-  imageUpload(req.body);
+  imageUpload(req.body.image);
   res.status(200).json({"msg": "Got here!"});
 });
 

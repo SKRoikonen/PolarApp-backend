@@ -113,6 +113,7 @@ const imageUpload = async (base64) => {
 
   // Ensure that you POST a base64 data to your server.
   // Let's assume the variable "base64" is one.
+  console.log(base64);
   const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
 
   // Getting the file type, ie: jpeg, png or gif
@@ -154,7 +155,7 @@ const imageUpload = async (base64) => {
 module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
-  console.log(req.body);
+  //console.log(req.body);
   imageUpload(req.body);
   res.status(200).json({"msg": "Got here!"});
 });

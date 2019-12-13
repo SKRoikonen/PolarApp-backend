@@ -154,8 +154,9 @@ const imageUpload = async (base64) => {
 module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
-  new imageUpload((res) => {
-    console.log(res);
+  console.log(req.body);
+  req.body.imageUpload(async () => {
+    console.log("got here");
   });
   /*imageUpload(req.body, res, function(err) {
     if (err) {

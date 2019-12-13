@@ -345,7 +345,7 @@ app.post("/follows", function(req, res) {
   var token = req.headers['x-access-token'];
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
-  } else {
+  } else if (req.body.myId != null && req.body.targetId != null ) {
     var newFollow = req.body;
     db.collection(FOLLOWS_COLLECTION).insertOne(newFollow, function(err, doc) {
       if (err) {
@@ -354,6 +354,8 @@ app.post("/follows", function(req, res) {
         res.status(201).json(doc.ops[0]);
       }
     });
+  } else {
+      res.status(400).json({"msg": "Invalid IDs"});
   }
 });
 
@@ -388,7 +390,6 @@ app.get("/follows/myId/:myId/users", function(req, res) {
       } else {
         var userIds = [];
         docs.forEach(follow => {
-          console.log(follow.targetId);
           userIds.push(ObjectID(follow.targetId));
         });
         db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {

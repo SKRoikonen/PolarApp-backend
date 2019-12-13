@@ -117,7 +117,7 @@ const imageUpload = async (base64) => {
   console.log(base64Data);
   // Getting the file type, ie: jpeg, png or gif
   const type = base64.toString().split(';')[0].split('/')[1];
-
+  console.log(type);
   // With this setup, each time your user uploads an image, will be overwritten.
   // To prevent this, use a different Key each time.
   // This won't be needed if they're uploading their avatar, hence the filename, userAvatar.js.

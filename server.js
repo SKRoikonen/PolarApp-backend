@@ -23,7 +23,6 @@ var singleUpload;
 var s3;
 
 var app = express();
-app.use(bodyParser.json());
 
 // Create link to Angular build directory
 var distDir = __dirname + "/dist/";
@@ -154,9 +153,11 @@ module.exports = imageUpload;
 app.post('/image-upload', function(req, res) {
   try {
     imageUpload(req.body.image, req.body.myId);
+    console.log("success");
     res.status(201).json({"msg": "Image uploaded"});
   } catch (error) {
-    res.status(201).json({"msg": "Upload failed"});
+    console.log("fail");
+    res.status(400).json({"msg": "Upload failed"});
   }
 });
 

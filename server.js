@@ -388,7 +388,8 @@ app.get("/follows/myId/:myId/users", function(req, res) {
       } else {
         var userIds = [];
         docs.forEach(follow => {
-          userIds.push(ObjectID(follow["targetId"]));
+          console.log(follow.targetId);
+          userIds.push(ObjectID(follow.targetId));
         });
         db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
           if (err) {

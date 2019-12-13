@@ -113,11 +113,10 @@ const imageUpload = async (base64) => {
 
   // Ensure that you POST a base64 data to your server.
   // Let's assume the variable "base64" is one.
-  console.log(base64);
   const base64Data = new Buffer.from(base64.toString().replace(/^data:image\/\w+;base64,/, ""), 'base64');
-
+  console.log(base64Data);
   // Getting the file type, ie: jpeg, png or gif
-  const type = base64.split(';')[0].split('/')[1];
+  const type = base64.toString().split(';')[0].split('/')[1];
 
   // With this setup, each time your user uploads an image, will be overwritten.
   // To prevent this, use a different Key each time.

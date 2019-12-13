@@ -154,13 +154,16 @@ const imageUpload = async (base64) => {
 module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
-  imageUpload(req.body, res, function(err) {
+  new imageUpload((res) => {
+    console.log(res);
+  });
+  /*imageUpload(req.body, res, function(err) {
     if (err) {
       return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
     } else {
       return res.send("Success");
     }
-  });
+  });*/
 });
 
 /*app.post('/image-upload', function(req, res) {

@@ -35,6 +35,7 @@ var db;
 app.use(bodyParser.json({limit: '100mb', extended: true}))
 app.use(bodyParser.raw({limit: '100mb', extended: true}))
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}))
+app.use(bodyParser.text({limit: '100mb', extended: true}))
 
 // Connect to the database before starting the application server.
 mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1ukum4uku@ds059957.mlab.com:59957/polarapp", { useNewUrlParser: true }, function (err, client) {
@@ -57,6 +58,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
         region: 'eu-north-1'
       });
       s3 = new aws.S3();
+      aws.config.setPromisesDependency(require('bluebird'));
       /*const upload = multer({
         storage: multerS3({
           s3: s3,
@@ -105,10 +107,9 @@ const imageUpload = async (base64) => {
 
   // You can either "yarn add aws-sdk" or "npm i aws-sdk"
   // Configure AWS to use promise
-  aws.config.setPromisesDependency(require('bluebird'));
 
   // Create an s3 instance
-  const s3 = new AWS.S3();
+  //const s3 = new AWS.S3();
 
   // Ensure that you POST a base64 data to your server.
   // Let's assume the variable "base64" is one.

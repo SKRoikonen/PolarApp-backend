@@ -152,8 +152,12 @@ const imageUpload = async (base64, myId) => {
 module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
-  imageUpload(req.body.image, req.body.myId);
-  res.status(201).json({"msg": "Image received"});
+  try {
+    imageUpload(req.body.image, req.body.myId);
+    res.status(201).json({"msg": "Image uploaded"});
+  } catch (error) {
+    res.status(201).json({"msg": "Upload failed"});
+  }
 });
 
 /*app.post('/image-upload', function(req, res) {

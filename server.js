@@ -103,8 +103,7 @@ function handleError(res, reason, message, code) {
  * @param  {string}  base64 Data
  * @return {string}  Image url
  */
-const imageUpload = async (base64) => {
-  console.log("got here!");
+const imageUpload = async (base64, myId) => {
   // You can either "yarn add aws-sdk" or "npm i aws-sdk"
   // Configure AWS to use promise
 
@@ -122,7 +121,7 @@ const imageUpload = async (base64) => {
   // This won't be needed if they're uploading their avatar, hence the filename, userAvatar.js.
   const params = {
     Bucket: 'polarapp-pictures',
-    Key: Date.now().toString(),//`${userId}.${type}`, // type is not required
+    Key: myId,//`${userId}.${type}`, // type is not required
     Body: base64Data,
     ACL: 'public-read',
     ContentEncoding: 'base64', // required
@@ -153,9 +152,8 @@ const imageUpload = async (base64) => {
 module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
-  //console.log(req.body);
-  var imageCode = imageUpload(req.body.image).replace('https://polarapp-pictures.s3.eu-north-1.amazonaws.com/', "");
-  res.status(201).json({"picture": imageCode});
+  imageUpload(req.body.image, req.body.myId);
+  res.status(201).json({"msg": "Image received"});
 });
 
 /*app.post('/image-upload', function(req, res) {

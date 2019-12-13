@@ -53,7 +53,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
         region: 'eu-north-1'
       });
       s3 = new aws.S3();
-      const upload = multer({
+      /*const upload = multer({
         storage: multerS3({
           s3: s3,
           bucket: 'polarapp-pictures',
@@ -66,7 +66,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1u
           }
         })
       })
-      singleUpload = upload.single('image');
+      singleUpload = upload.single('image');*/
     });
   });
 
@@ -87,6 +87,86 @@ function handleError(res, reason, message, code) {
   console.log("ERROR: " + reason);
   res.status(code || 500).json({"error": message});
 }
+
+/**
+ * This gist was inspired from https://gist.github.com/homam/8646090 which I wanted to work when uploading an image from
+ * a base64 string.
+ * Updated to use Promise (bluebird)
+ * Web: https://mayneweb.com
+ *
+ * @param  {string}  base64 Data
+ * @return {string}  Image url
+ */
+const imageUpload = async (base64) => {
+
+  // You can either "yarn add aws-sdk" or "npm i aws-sdk"
+  // Configure AWS to use promise
+  aws.config.setPromisesDependency(require('bluebird'));
+
+  // Create an s3 instance
+  const s3 = new AWS.S3();
+
+  // Ensure that you POST a base64 data to your server.
+  // Let's assume the variable "base64" is one.
+  const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+
+  // Getting the file type, ie: jpeg, png or gif
+  const type = base64.split(';')[0].split('/')[1];
+
+  // With this setup, each time your user uploads an image, will be overwritten.
+  // To prevent this, use a different Key each time.
+  // This won't be needed if they're uploading their avatar, hence the filename, userAvatar.js.
+  const params = {
+    Bucket: 'polarapp-pictures',
+    Key: Date.now().toString(),//`${userId}.${type}`, // type is not required
+    Body: base64Data,
+    ACL: 'public-read',
+    ContentEncoding: 'base64', // required
+    ContentType: `image/${type}` // required. Notice the back ticks
+  }
+
+  // The upload() is used instead of putObject() as we'd need the location url and assign that to our user profile/database
+  // see: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
+  let location = '';
+  let key = '';
+  try {
+    const { Location, Key } = await s3.upload(params).promise();
+    location = Location;
+    key = Key;
+  } catch (error) {
+     // console.log(error)
+  }
+
+  // Save the Location (url) to your database and Key if needs be.
+  // As good developers, we should return the url and let other function do the saving to database etc
+  console.log(location, key);
+
+  return location;
+
+  // To delete, see: https://gist.github.com/SylarRuby/b3b1430ca633bc5ffec29bbcdac2bd52
+}
+
+module.exports = imageUpload;
+
+app.post('/image-upload', function(req, res) {
+  imageUpload(req.body, res, function(err) {
+    if (err) {
+      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
+    } else {
+      return res.send("Success");
+    }
+  });
+});
+
+/*app.post('/image-upload', function(req, res) {
+  singleUpload(req, res, function(err) {
+    if (err) {
+      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
+    } else {
+      return res.json({'imageUrl': req.file.location});
+    }
+  });
+});*/
 
 app.post("/users", function(req, res) {
   var token = req.headers['x-access-token'];
@@ -420,15 +500,7 @@ app.delete("/routes/:id", function(req, res) {
   }
 });
 
-app.post('/image-upload', function(req, res) {
-  singleUpload(req, res, function(err) {
-    if (err) {
-      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
-    } else {
-      return res.json({'imageUrl': req.file.location});
-    }
-  });
-});
+
 
 /*app.get("/players/email/:email", function(req, res) {
   db.collection(PLAYERS_COLLECTION).findOne({email: req.params.email}, function(err, docs) {

@@ -32,6 +32,10 @@ app.use(express.static(distDir));
 // Create a database variable outside of the database connection callback to reuse the connection pool in your app.
 var db;
 
+app.use(bodyParser.json({limit: '100mb', extended: true}))
+app.use(bodyParser.raw({limit: '100mb', extended: true}))
+app.use(bodyParser.urlencoded({limit: '100mb', extended: true}))
+
 // Connect to the database before starting the application server.
 mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://skroikonen:m1ukum4uku@ds059957.mlab.com:59957/polarapp", { useNewUrlParser: true }, function (err, client) {
   if (err) {

@@ -185,6 +185,20 @@
           </div>
       </div>
       <br>
+      <b>NEW!</b> delete follow
+      <div class="tab">
+          DELETE https://polarapp-oamk.herokuapp.com/follows<br>
+          requires body:<br>
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "myId": "<b>5ddd2f1a61cd251a6417d4c3</b>",<br>
+                  "targetId": "<b>5de79d91acc7710017036f60</b>"<br>
+                </div>
+              }
+          </div>
+      </div>
+      <br>
       get followed users
       <div class="tab">
           GET https://polarapp-oamk.herokuapp.com/follows/myId/<b>5ddd2f1a61cd251a6417d4c3</b>/users<br>

@@ -357,6 +357,21 @@ app.post("/follows", function(req, res) {
   }
 });
 
+app.delete("/follows", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token || !token))) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(FOLLOWS_COLLECTION).deleteMany( { myId: req.body.myId, targetId: req.body.targetId }, function(err, result) {
+      if (err) {
+        handleError(res, err.message, "Failed to delete follows.");
+      } else {
+        res.status(201).send("Successfully deleted follows");
+      }
+    });
+  }
+});
+
 app.get("/follows/myId/:myId/users", function(req, res) {
   var token = req.headers['x-access-token'];
   if (tokenRequired && (!tokenIsValid(token || !token))) {

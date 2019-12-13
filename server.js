@@ -366,7 +366,7 @@ app.delete("/follows", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to delete follows.");
       } else {
-        res.status(201).send("Successfully deleted follows");
+        res.status(201).json({"msg": "Successfully deleted follow(s)"});
       }
     });
   }

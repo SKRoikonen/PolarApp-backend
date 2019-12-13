@@ -104,7 +104,7 @@ function handleError(res, reason, message, code) {
  * @return {string}  Image url
  */
 const imageUpload = async (base64) => {
-
+  console.log("got here!");
   // You can either "yarn add aws-sdk" or "npm i aws-sdk"
   // Configure AWS to use promise
 
@@ -155,16 +155,8 @@ module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
   console.log(req.body);
-  req.body.imageUpload(async () => {
-    console.log("got here");
-  });
-  /*imageUpload(req.body, res, function(err) {
-    if (err) {
-      return res.status(422).send({errors: [{title: 'File Upload Error', detail: err.message}] });
-    } else {
-      return res.send("Success");
-    }
-  });*/
+  imageUpload(req.body);
+  res.status(200).json({"msg": "Got here!"});
 });
 
 /*app.post('/image-upload', function(req, res) {

@@ -18,16 +18,19 @@
       <b>NEW!</b> upload image
       <div class="tab">
           POST https://polarapp-oamk.herokuapp.com/image-upload<br>
-          requires body:
+          requires body (base64 encoded bmp string):
           <div style="margin-left: 20px">
-              form data: <b>file</b><br>
-              key: 'image'
+            {<br>
+              <div style="margin-left: 20px">
+                "image": "<b>/9j/4AAQSkZJRgABAQAAAQABAAD/2w...</b>"
+              </div>
+            }
           </div>
-          if successful, returns:
+          returns:
           <div style="margin-left: 20px">
               {<br>
                 <div style="margin-left: 20px">
-                    "imageUrl": "https://polarapp-pictures.s3.eu-north-1.amazonaws.com/<b>1576168610185</b>"
+                    "picture": "<b>1576268255321</b>"
                 </div>
               }
         </div>

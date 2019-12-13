@@ -154,8 +154,8 @@ module.exports = imageUpload;
 
 app.post('/image-upload', function(req, res) {
   //console.log(req.body);
-  imageUpload(req.body.image);
-  res.status(200).json({"msg": "Got here!"});
+  var imageCode = imageUpload(req.body.image).replace('https://polarapp-pictures.s3.eu-north-1.amazonaws.com/', "");
+  res.status(201).json({"picture": imageCode});
 });
 
 /*app.post('/image-upload', function(req, res) {

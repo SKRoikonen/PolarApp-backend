@@ -363,11 +363,15 @@ app.delete("/follows", function(req, res) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     console.log("myId: " + req.body.myId + " targetId: " + req.body.targetId);
-    db.collection(FOLLOWS_COLLECTION).deleteMany( { myId: req.body.myId+"", targetId: req.body.targetId+"" }, function(err, result) {
+    db.collection(FOLLOWS_COLLECTION).deleteMany( { myId: req.body.myId, targetId: req.body.targetId }, function(err, result) {
       if (err) {
         handleError(res, err.message, "Failed to delete follows.");
       } else {
-        res.status(201).json({"msg": "Successfully deleted follow(s)"});
+        if (result.deletedCount > 0) {
+          res.status(201).json({"msg": "Successfully deleted " + result.deletedCount + " follow(s)"});
+        } else {
+          res.status(201).json({"msg": "No follows found"});
+        }
       }
     });
   }

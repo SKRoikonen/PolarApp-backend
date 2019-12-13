@@ -362,7 +362,8 @@ app.delete("/follows", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token || !token))) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(FOLLOWS_COLLECTION).deleteMany( { myId: req.body.myId, targetId: req.body.targetId }, function(err, result) {
+    console.log("myId: " + req.body.myId + " targetId: " + req.body.targetId);
+    db.collection(FOLLOWS_COLLECTION).deleteMany( { myId: req.body.myId+"", targetId: req.body.targetId+"" }, function(err, result) {
       if (err) {
         handleError(res, err.message, "Failed to delete follows.");
       } else {
@@ -385,7 +386,6 @@ app.get("/follows/myId/:myId/users", function(req, res) {
         docs.forEach(follow => {
           userIds.push(ObjectID(follow["targetId"]));
         });
-        console.log(userIds);
         db.collection(USERS_COLLECTION).find({ _id: { $in: userIds }}, {projection:{ password: 0 }}).toArray(function(err, docs) {
           if (err) {
             handleError(res, err.message, "Failed to get users.");

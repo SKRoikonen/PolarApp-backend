@@ -173,7 +173,7 @@ app.post('/image-upload', function(req, res) {
 
 app.post("/users", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     var newUser = req.body;
@@ -197,6 +197,26 @@ app.post("/users", function(req, res) {
     });
   }
 });
+
+app.put("/users/:id", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    var updateDoc = req.body;
+    delete updateDoc._id;
+    db.collection(USERS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, { $set: updateDoc }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update user");
+    } else {
+      res.status(200).json({"msg": "Successfully updated object(s)"});
+    }
+  });
+  }
+});
+
+
+
 
 app.post('/login', function(req, res) {
     // create a token
@@ -222,7 +242,7 @@ app.post('/login', function(req, res) {
 
 app.get("/users", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(USERS_COLLECTION).find({}, {projection:{ password: 0 }}).toArray(function(err, docs) {
@@ -252,7 +272,7 @@ app.get("/users", function(req, res) {
 
 app.get("/users/followCheck/:myId", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(FOLLOWS_COLLECTION).find({ myId: req.params.myId }).toArray(function(err, docs) {
@@ -284,7 +304,7 @@ app.get("/users/followCheck/:myId", function(req, res) {
 
 app.get("/users/:id", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(USERS_COLLECTION).findOne({_id: ObjectID(req.params.id)}, function(err, docs) {
@@ -299,7 +319,7 @@ app.get("/users/:id", function(req, res) {
 
 app.get("/users/email/:email", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(USERS_COLLECTION).findOne({email: req.params.email}, function(err, docs) {
@@ -314,7 +334,7 @@ app.get("/users/email/:email", function(req, res) {
 
 app.post("/users/email/followCheck", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(USERS_COLLECTION).findOne({ email: req.body.email, _id: { $ne: ObjectID(req.body.myId) }}, {projection:{ password: 0 }}, function(err, userResult) {
@@ -343,7 +363,7 @@ app.post("/users/email/followCheck", function(req, res) {
 
 app.delete("/users/:id", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(USERS_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, result) {
@@ -358,7 +378,7 @@ app.delete("/users/:id", function(req, res) {
 
 app.get("/routes", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(ROUTES_COLLECTION).find({}).toArray(function(err, docs) {
@@ -373,7 +393,7 @@ app.get("/routes", function(req, res) {
 
 app.get("/routes/:id", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(ROUTES_COLLECTION).findOne({_id: ObjectID(req.params.id)}, function(err, docs) {
@@ -388,7 +408,7 @@ app.get("/routes/:id", function(req, res) {
 
 app.get("/routes/owner/:owner", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(ROUTES_COLLECTION).find({ owner: req.params.owner }, {projection:{ datapoints: 0 }}).toArray(function(err, docs) {
@@ -404,7 +424,7 @@ app.get("/routes/owner/:owner", function(req, res) {
 
 app.post("/routes", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     var newRoute = req.body;
@@ -426,7 +446,7 @@ app.post("/routes", function(req, res) {
 
 app.post("/follows", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else if (req.body.myId != null && req.body.targetId != null ) {
     var newFollow = req.body;
@@ -444,7 +464,7 @@ app.post("/follows", function(req, res) {
 
 app.delete("/follows/myId/:myId/targetId/:targetId", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     console.log("myId: " + req.params.myId + " targetId: " + req.params.targetId);
@@ -464,7 +484,7 @@ app.delete("/follows/myId/:myId/targetId/:targetId", function(req, res) {
 
 app.get("/follows/myId/:myId/users", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(FOLLOWS_COLLECTION).find({ myId: req.params.myId }).toArray(function(err, docs) {
@@ -490,7 +510,7 @@ app.get("/follows/myId/:myId/users", function(req, res) {
 
 app.delete("/routes/:id", function(req, res) {
   var token = req.headers['x-access-token'];
-  if (tokenRequired && (!tokenIsValid(token || !token))) {
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
     db.collection(ROUTES_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, result) {

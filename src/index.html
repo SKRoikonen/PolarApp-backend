@@ -15,7 +15,7 @@
           <b>bolded</b> denotes a placeholder value
         </div>
       <br>
-      <b>NEW!</b> upload image
+      upload image
       <div class="tab">
           POST https://polarapp-oamk.herokuapp.com/image-upload<br>
           requires body (base64 encoded bmp string):
@@ -73,8 +73,30 @@
                     "error": "E-mail already exists"<br>
                 </div>
               }
+          </div>
       </div>
-      </div>
+      <br>
+      <span style="font-size: 30px"><b>NEW!</b></span> update user
+      <div class="tab">
+        PUT https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c3</b><br>
+        requires body (new data):
+        <div style="margin-left: 20px">
+            {<br>
+              <div style="margin-left: 20px">
+                "totaldistance": <b>27.4</b>,<br>
+                "maxspeed": <b>6.5</b><br>
+              </div>
+            }
+        </div>
+        if completed, returns:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                    "msg": "Successfully updated object(s)"<br>
+                </div>
+              }
+          </div>
+    </div>
       <br>
       user by id
       <div class="tab">

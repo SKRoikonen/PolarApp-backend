@@ -366,11 +366,23 @@ app.delete("/users/:id", function(req, res) {
   if (tokenRequired && (!tokenIsValid(token) || !token)) {
     handleError(res, "Invalid access token.", "Invalid access token.");
   } else {
-    db.collection(USERS_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, result) {
+    db.collection(USERS_COLLECTION).deleteOne({_id: ObjectID(req.params.id)}, function(err, userresult) {
       if (err) {
         handleError(res, err.message, "Failed to delete user");
       } else {
-        res.status(200).json(req.params.id);
+        db.collection(FOLLOWS_COLLECTION).deleteMany({ $or: [ { myId: req.params.id }, { targetId: req.params.id } ] }, function(err, followresult) {
+          if (err) {
+            handleError(res, err.message, "Failed to delete follows");
+          } else {
+            db.collection(ROUTES_COLLECTION).deleteMany({ owner: req.params.id }, function(err, routeresult) {
+              if (err) {
+                handleError(res, err.message, "Failed to delete routes");
+              } else {
+                res.status(200).json({"msg": "Successfully deleted " + userresult.deletedCount + " user(s), " + followresult.deletedCount + " follow(s), " + routeresult.deletedCount + " route(s)"});
+              }
+            });
+          }
+        });
       }
     });
   }

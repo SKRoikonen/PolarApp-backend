@@ -485,9 +485,9 @@ app.delete("/follows/myId/:myId/targetId/:targetId", function(req, res) {
         handleError(res, err.message, "Failed to delete follows.");
       } else {
         if (result.deletedCount > 0) {
-          res.status(201).json({"msg": "Successfully deleted " + result.deletedCount + " follow(s)"});
+          res.status(200).json({"msg": "Successfully deleted " + result.deletedCount + " follow(s)"});
         } else {
-          res.status(201).json({"msg": "No follows found"});
+          res.status(200).json({"msg": "No follows found"});
         }
       }
     });
@@ -529,7 +529,7 @@ app.delete("/routes/:id", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to delete route");
       } else {
-        res.status(200).json(req.params.id);
+        res.status(200).json({"msg": "Successfully deleted " + result.deletedCount + " route(s)"});
       }
     });
   }

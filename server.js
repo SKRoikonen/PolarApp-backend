@@ -11,6 +11,7 @@ var KEYS_COLLECTION = "keys";
 var USERS_COLLECTION = "users";
 var ROUTES_COLLECTION = "routes";
 var FOLLOWS_COLLECTION = "follows";
+var AWARDS_COLLECTION = "awards";
 
 var tokenRequired = false;
 
@@ -530,6 +531,37 @@ app.delete("/routes/:id", function(req, res) {
         handleError(res, err.message, "Failed to delete route");
       } else {
         res.status(200).json({"msg": "Successfully deleted " + result.deletedCount + " route(s)"});
+      }
+    });
+  }
+});
+
+app.post("/awards", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    var newAward = req.body;
+    db.collection(AWARDS_COLLECTION).insertOne(newAward, function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to create new award.");
+      } else {
+        res.status(201).json(doc.ops[0]);
+      }
+    });
+  }
+});
+
+app.get("/awards/owner/:owner", function(req, res) {
+  var token = req.headers['x-access-token'];
+  if (tokenRequired && (!tokenIsValid(token) || !token)) {
+    handleError(res, "Invalid access token.", "Invalid access token.");
+  } else {
+    db.collection(AWARDS_COLLECTION).find({ owner: req.params.owner }).toArray(function(err, docs) {
+      if (err) {
+        handleError(res, err.message, "Failed to get awards.");
+      } else {
+        res.status(200).json(docs);
       }
     });
   }

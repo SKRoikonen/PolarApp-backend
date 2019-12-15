@@ -15,6 +15,27 @@
           <b>bolded</b> denotes a placeholder value
         </div>
       <br>
+      <span style="font-size: 30px"><b>NEW!</b></span> new award
+      <div class="tab">
+          POST https://polarapp-oamk.herokuapp.com/awards<br>
+          requires body:
+          <div style="margin-left: 20px">
+              {<br>
+                <div style="margin-left: 20px">
+                  "owner": "<b>5ddd2f1a61cd251a6417d4c3</b>",<br>
+                  "name": "<b>Ironman</b>",<br>
+                  "description": "<b>Ran 100 routes</b>",<br>
+                  "level": <b>1</b>
+                </div>
+              }
+          </div>
+      </div>
+      <br>
+      <span style="font-size: 30px"><b>NEW!</b></span> awards by owner
+      <div class="tab">
+          GET https://polarapp-oamk.herokuapp.com/awards/owner/<b>5ddd2f1a61cd251a6417d4c3</b><br>
+      </div>
+      <br>
       upload image
       <div class="tab">
           POST https://polarapp-oamk.herokuapp.com/image-upload<br>
@@ -76,7 +97,7 @@
           </div>
       </div>
       <br>
-      <span style="font-size: 30px"><b>NEW!</b></span> update user
+      update user
       <div class="tab">
         PUT https://polarapp-oamk.herokuapp.com/users/<b>5ddd2f1a61cd251a6417d4c3</b><br>
         requires body (new data):
@@ -207,7 +228,7 @@
           </div>
       </div>
       <br>
-      <b>NEW!</b> delete follow
+      delete follow
       <div class="tab">
           DELETE https://polarapp-oamk.herokuapp.com/follows/myId/<b>5ddd2f1a61cd251a6417d4c3</b>/targetId/<b>5de79d91acc7710017036f60</b><br>
       </div>
